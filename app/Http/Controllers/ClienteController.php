@@ -1,0 +1,92 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\models\Cliente;
+use Illuminate\Http\Request;
+
+class ClienteController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $clientes = Cliente::all();
+
+        return view('clientes.index',
+        compact('clientes'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return view('clientes.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $dados = $request->validate([
+            'nome' => 'required|max:255',
+            'email' => 'required|email|unique:clientes,email',
+            'telefone' => "nullable|max:20"
+        ]);
+
+        Cliente::create($dados);
+
+        return redirect()
+        ->route('clientes.index')
+        ->with('sucess', 'Cliente cadastrado com sucesso!!');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Cliente $cliente)
+    {
+        return view('cliente.show',
+        compact('cliente'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Cliente $cliente)
+    {
+        return view('cliente.edit', compact('cliente'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Cliente $cliente)
+    {
+        $dados = $request->validate([
+            'nome' => 'required|max:255',
+            'email' => 'required|email|unique:clientes,email' . $cliente->id,
+            'telefone' => "nullable|max:20"
+        ]);
+        $cliente->update($dados);
+
+        return redirect()
+            ->route('clientes.index')
+            ->with('sucess', 'cliente atualizado com sucesso!!');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Cliente $cliente)
+    {
+        $cliente->delete();
+
+        return redirect()
+            ->route('clientes.index')
+            ->wth('sucess', 'Cliente excluido com sucesso!!');
+    }
+}
